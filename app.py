@@ -31,16 +31,19 @@ def preprocess_text(text):
 # Fungsi prediksi
 def predict_sentiment(text, model_choice, svm_model, tfidf, lstm_model, tokenizer):
     cleaned = preprocess_text(text)
+    st.write("Cleaned Text:", cleaned)
     label_dict = {0: 'negative', 1: 'neutral', 2: 'positive'}
 
     if model_choice == 'SVM':
         vec = tfidf.transform([cleaned])
         probs = svm_model.predict_proba(vec)[0]
+        st.write("Confidence Scores:", probs)
         pred = svm_model.predict(vec)[0]
     else:  # LSTM
         seq = tokenizer.texts_to_sequences([cleaned])
         padded = pad_sequences(seq, maxlen=100)
         probs = lstm_model.predict(padded, verbose=0)[0]
+        st.write("Confidence Scores:", probs)
         pred = label_dict[np.argmax(probs)]
 
     return pred, probs
